@@ -49,8 +49,8 @@ target_link_libraries(hw_grpc_proto
   ${_PROTOBUF_LIBPROTOBUF})
 
 # Targets greeter_[async_](client|server)
-foreach(_target  service client)
-  add_executable(${_target} "${_target}.cpp")
+foreach(_target  service service_async client client_async)
+  add_executable(${_target} "${_target}.cpp" StopWatch.cpp)
   target_link_libraries(${_target}
     hw_grpc_proto
     absl::check
@@ -62,6 +62,7 @@ foreach(_target  service client)
     ${_PROTOBUF_LIBPROTOBUF})
     target_link_libraries(${_target} ${OpenCV_LIBS} ${Boost_LIBRARIES})
     target_compile_options(${_target} PRIVATE -Wall -Wextra -g)
+    target_include_directories(${_target}  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()
 
 include_directories(${OpenCV_INCLUDE_DIRS})

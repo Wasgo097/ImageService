@@ -4,7 +4,7 @@ package ImageService;
 
 service NewImageService {
   rpc NewImage (ImageRequest) returns (ImageReply) {}
-  rpc TestConnection (Test) returns (Test) {}
+  rpc TestConnection (TestRequest) returns (TestReply) {}
 }
 
 // The request message containing the user's name.
@@ -20,6 +20,10 @@ message ImageReply {
   string message = 1;
 }
 
-message Test{
+message TestRequest{
+  string message = 1;
+}
+
+message TestReply{
   string message = 1;
 }

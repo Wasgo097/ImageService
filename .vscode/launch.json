@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cmake/build/service",
+            "program": "${workspaceFolder}/src/cmake/build/service_async",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",
