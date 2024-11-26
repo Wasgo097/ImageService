@@ -17,6 +17,12 @@
 using namespace std::chrono_literals;
 
 ABSL_FLAG(uint16_t, port, 50051, "Server port for the service");
+enum class CallStatus
+{
+    CREATE,
+    PROCESS,
+    FINISH
+};
 
 class CallDataBase
 {
@@ -31,7 +37,7 @@ class CallDataT : CallDataBase
 public:
     CallDataT(ImageService::NewImageService::AsyncService *service,
               grpc::ServerCompletionQueue *completionQueue)
-        : status_(CREATE),
+        : status_(CallStatus::CREATE),
           service_(service),
           completionQueue_(completionQueue),
           responder_(&serverContext_) {}
@@ -39,22 +45,22 @@ public:
 
     void Proceed() override
     {
-        if (status_ == CREATE)
+        if (status_ == CallStatus::CREATE)
         {
-            status_ = PROCESS;
+            status_ = CallStatus::PROCESS;
             WaitForRequest();
         }
-        else if (status_ == PROCESS)
+        else if (status_ == CallStatus::PROCESS)
         {
             AddNextToCompletionQueue();
             HandleRequest();
-            status_ = FINISH;
+            status_ = CallStatus::FINISH;
             responder_.Finish(reply_, grpc::Status::OK, this);
         }
         else
         {
             // We're done! Self-destruct!
-            if (status_ != FINISH)
+            if (status_ != CallStatus::FINISH)
             {
                 // Log some error message
             }
@@ -66,14 +72,8 @@ protected:
     virtual void AddNextToCompletionQueue() = 0;
     virtual void WaitForRequest() = 0;
     virtual void HandleRequest() = 0;
-    enum CallStatus
-    {
-        CREATE,
-        PROCESS,
-        FINISH
-    };
-    CallStatus status_;
 
+    CallStatus status_;
     ImageService::NewImageService::AsyncService *service_;
     grpc::ServerCompletionQueue *completionQueue_;
     RequestType request_;
